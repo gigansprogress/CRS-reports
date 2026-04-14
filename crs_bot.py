@@ -3,7 +3,6 @@ import requests
 from atproto import Client, client_utils
 
 # --- CONFIGURATION ---
-# These pull from your GitHub Secrets for safety
 BSKY_HANDLE = os.environ.get('BSKY_HANDLE')
 BSKY_PASSWORD = os.environ.get('BSKY_PASSWORD')
 MEMORY_FILE = "posted_links.txt"
@@ -60,14 +59,19 @@ def mark_as_posted(link):
     with open(MEMORY_FILE, "a") as f:
         f.write(link + "\n")
 
+# --- MAIN EXECUTION BLOCK (FORCED TEST MODE) ---
 if __name__ == "__main__":
-    print("Checking for new CRS reports...")
+    print("Checking for CRS reports...")
     all_latest = get_latest_crs_reports()
-    new_reports = filter_new_reports(all_latest)
-
-    if not new_reports:
-        print("No new reports found.")
+    
+    if not all_latest:
+        print("No reports found at the source.")
     else:
-        for report in new_reports:
-            post_to_bluesky(report)
-            mark_as_posted(report['link'])
+        # STEP 3 CHANGE: Force post the single most recent report for testing
+        print(f"FORCING TEST POST: {all_latest[0]['title']}")
+        post_to_bluesky(all_latest[0])
+        
+        # We comment out 'mark_as_posted' so you can run the test again if needed
+        # mark_as_posted(all_latest[0]['link']) 
+        
+        print("Test run complete. Check Bluesky!")
