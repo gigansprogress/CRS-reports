@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: os-actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -27,19 +27,12 @@ jobs:
         run: python crs_bot.py
 
       - name: Save Memory to Repo
-        run: 
-        |git config --global user.name "GitHub Action"
+        run: |
+          git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          # Check if the file exists before trying to add it
           if [ -f posted_links.txt ]; then
             git add posted_links.txt
-            # Only commit if there are actually changes to avoid errors
             git diff --quiet && git diff --staged --quiet || (git commit -m "Update posted links [skip ci]" && git push)
           else
             echo "No new reports were posted; nothing to save."
           fi
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          git add posted_links.txt
-          git commit -m "Update posted links [skip ci]" || exit 0
-          git push
